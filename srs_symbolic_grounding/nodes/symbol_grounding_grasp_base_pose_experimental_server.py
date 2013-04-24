@@ -104,7 +104,7 @@ def getRobotBasePoseList(angle, dist, rbp, obj_x, obj_y):
 	rb_pose = rbp
 	target_obj_x = obj_x
 	target_obj_y = obj_y
-	th = math.atan((rb_pose.y - target_obj_y) / (rb_pose.x - target_obj_x))
+	th = math.atan((rb_pose.y - target_obj_y) / (rb_pose.x - target_obj_x + 0.00001))
 	if rb_pose.x < target_obj_x and rb_pose.y > target_obj_y:
 		th = math.pi + th
 	if rb_pose.x < target_obj_x and rb_pose.y < target_obj_y:
@@ -116,7 +116,7 @@ def getRobotBasePoseList(angle, dist, rbp, obj_x, obj_y):
 		grasp_base_pose.y = target_obj_y + dist_to_obj * math.sin(th + n * step_angle / 180.0 * math.pi)
 		grasp_base_pose.theta = th + n * step_angle / 180.0 * math.pi
 		if grasp_base_pose.theta > math.pi:
-			grasp_base_pose.theta -= 2 * math.pi
+			grasp_base_pose.theta -= 2.0 * math.pi
 		grasp_base_pose_list.append(grasp_base_pose)
 	#rospy.loginfo(grasp_base_pose_list)
 	return grasp_base_pose_list
@@ -144,7 +144,7 @@ def obstacleCheck(gbpl, po_x, po_y, po_th, po_w, po_l, fgl, to_h):
 		dist_to_table -= 0.05	
 	index_1 = 0
 	while index_1 < len(grasp_base_pose_list):
-		th = math.atan((grasp_base_pose_list[index_1].y - parent_obj_y) / (grasp_base_pose_list[index_1].x - parent_obj_x))
+		th = math.atan((grasp_base_pose_list[index_1].y - parent_obj_y) / (grasp_base_pose_list[index_1].x - parent_obj_x + 0.00001))
 		if grasp_base_pose_list[index_1].x < parent_obj_x and grasp_base_pose_list[index_1].y > parent_obj_y:
 			th = math.pi + th
 		if grasp_base_pose_list[index_1].x < parent_obj_x and grasp_base_pose_list[index_1].y < parent_obj_y:
@@ -168,7 +168,7 @@ def obstacleCheck(gbpl, po_x, po_y, po_th, po_w, po_l, fgl, to_h):
 		while index_2 < len(parent_obj_checked_grasp_base_pose_list):
 			index_3 = 0
 			while index_3 < len(furniture_geometry_list):
-				th = math.atan((parent_obj_checked_grasp_base_pose_list[index_2].y - furniture_geometry_list[index_3].pose.y) / (parent_obj_checked_grasp_base_pose_list[index_2].x - furniture_geometry_list[index_3].pose.x))
+				th = math.atan((parent_obj_checked_grasp_base_pose_list[index_2].y - furniture_geometry_list[index_3].pose.y) / (parent_obj_checked_grasp_base_pose_list[index_2].x - furniture_geometry_list[index_3].pose.x + 0.00001))
 				if parent_obj_checked_grasp_base_pose_list[index_2].x < furniture_geometry_list[index_3].pose.x and parent_obj_checked_grasp_base_pose_list[index_2].y > furniture_geometry_list[index_3].pose.y:
 					th = math.pi + th
 				if parent_obj_checked_grasp_base_pose_list[index_2].x < furniture_geometry_list[index_3].pose.x and parent_obj_checked_grasp_base_pose_list[index_2].y < furniture_geometry_list[index_3].pose.y:
@@ -240,8 +240,8 @@ def handle_symbol_grounding_grasp_base_pose_experimental(req):
 
 	#test value near table
 	rb_pose = Pose2D()
-	rb_pose.x = -1.06
-	rb_pose.y = 1.08
+	rb_pose.x = 0.0
+	rb_pose.y = 0.0
 	rb_pose.theta = 0.0
 
 	#predefined membership function

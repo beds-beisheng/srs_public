@@ -57,7 +57,7 @@
 
 import roslib; roslib.load_manifest('srs_symbolic_grounding')
 from srs_symbolic_grounding.srv import *
-#from srs_symbolic_grounding.msg import *
+from srs_symbolic_grounding.msg import *
 from std_msgs.msg import *
 from geometry_msgs.msg import *
 from nav_msgs.msg import *
@@ -107,7 +107,7 @@ def obstacleCheck(sbpl, fgl, po_x, po_y):
 	while index_1 < len(scan_base_pose_list):
 		index_2 = 0
 		while index_2 < len(furniture_geometry_list):
-			th = math.atan((scan_base_pose_list[index_1].y - furniture_geometry_list[index_2].pose.y) / (scan_base_pose_list[index_1].x - furniture_geometry_list[index_2].pose.x))
+			th = math.atan((scan_base_pose_list[index_1].y - furniture_geometry_list[index_2].pose.y) / (scan_base_pose_list[index_1].x - furniture_geometry_list[index_2].pose.x + 0.00001))
 			if scan_base_pose_list[index_1].x < furniture_geometry_list[index_2].pose.x and scan_base_pose_list[index_1].y > furniture_geometry_list[index_2].pose.y:
 				th = math.pi + th
 			if scan_base_pose_list[index_1].x < furniture_geometry_list[index_2].pose.x and scan_base_pose_list[index_1].y < furniture_geometry_list[index_2].pose.y:
@@ -126,7 +126,7 @@ def obstacleCheck(sbpl, fgl, po_x, po_y):
 	if obstacle_checked_scan_base_pose_list: #check if there is a obstacle free pose in the list.
 			
 		#wall check
-		data = getMapClient() #get occupancy grid map from the navigation serves 
+		data = getMapClient() #get occupancy grid map from the navigation services 
 
 		
 		dist_to_walls = 0.5 #set the minimum distance to the walls
@@ -320,7 +320,7 @@ def handle_symbol_grounding_scan_base_pose(req):
 
 
 	#to decide which side of the table is facing the robot 
-	if ((parent_obj_th >= 0) & (parent_obj_th <= (45.0 / 180.0 * math.pi))) | ((parent_obj_th >= (135.0 / 180.0 * math.pi)) & (parent_obj_th <= (225.0 / 180.0 * math.pi))) | ((parent_obj_th >= (315.0 / 180.0 * math.pi)) & (parent_obj_th < 360)):
+	if ((parent_obj_th >= 0.0) & (parent_obj_th <= (45.0 / 180.0 * math.pi))) | ((parent_obj_th >= (135.0 / 180.0 * math.pi)) & (parent_obj_th <= (225.0 / 180.0 * math.pi))) | ((parent_obj_th >= (315.0 / 180.0 * math.pi)) & (parent_obj_th < 360.0)):
 		
 		#calculate 4 lists of scan poses, each list is for scanning from one side of the table.
 		step = int((parent_obj_l / detection_w) + 0.99)
