@@ -97,18 +97,30 @@ def getMapClient():
 		print "Service call failed: %s"%e
 
 #this function is used to calculate a list of canidate poses around the target obj. the number of candidate poses is 360/step_angle
-def getRobotBasePoseList(angle, dist, rbp, obj_x, obj_y):
+def getRobotBasePoseList(angle, dist, rbp, obj_x, obj_y, p_obj_th):
 	grasp_base_pose_list = list()
 	step_angle = angle
 	dist_to_obj = dist
 	rb_pose = rbp
 	target_obj_x = obj_x
 	target_obj_y = obj_y
+	parent_obj_th = p_obj_th
 	th = math.atan((rb_pose.y - target_obj_y) / (rb_pose.x - target_obj_x + 0.00001))
 	if rb_pose.x < target_obj_x and rb_pose.y > target_obj_y:
 		th = math.pi + th
 	if rb_pose.x < target_obj_x and rb_pose.y < target_obj_y:
 		th = -math.pi + th
+
+	# add 4 candidate grasping base pose
+	for n in range (0, 3):
+		grasp_base_pose = Pose2D()
+		grasp_base_pose.x = target_obj_x + dist_to_obj * math.cos(parent_obj_th + math.atan(0.05 / dist_to_obj) + 0.5 * math.pi * n)
+		grasp_base_pose.y = target_obj_y + dist_to_obj * math.sin(parent_obj_th + math.atan(0.05 / dist_to_obj) + 0.5 * math.pi * n)
+		grasp_base_pose.theta = parent_obj_th + 0.5 * math.pi * n
+		if grasp_base_pose.theta > math.pi:
+			grasp_base_pose.theta -= 2.0 * math.pi
+		grasp_base_pose_list.append(grasp_base_pose)
+
 	#rospy.loginfo(th)
 	for n in range (0, int(360.0 / step_angle)):
 		grasp_base_pose = Pose2D()
@@ -368,20 +380,20 @@ def handle_symbol_grounding_grasp_base_pose_experimental(req):
 	#calculate two lists of candidate base poses for grasping 	
 	#the first candidate pose list
 	step_angle_1 = 1.0 #360 / step_angle of candidate poses will be put around the target obj
-	dist_1 = 0.75 #distance to the target obj
+	dist_1 = 0.72 #distance to the target obj
 	step_angle_2 = 1.0
-	dist_2 = 0.8
+	dist_2 = 0.77
 	#print target_obj_h
 	if target_obj_h > 1.2 or target_obj_h < 0.85:
-		dist_1 -= 0.05
-		dist_2 -= 0.05
+		dist_1 -= 0.03
+		dist_2 -= 0.03
 	grasp_base_pose_list_1 = list()
-	grasp_base_pose_list_1 = getRobotBasePoseList(step_angle_1, dist_1, rb_pose, target_obj_x, target_obj_y)
+	grasp_base_pose_list_1 = getRobotBasePoseList(step_angle_1, dist_1, rb_pose, target_obj_x, target_obj_y, parent_obj_th)
 	#rospy.loginfo(grasp_base_pose_list)
 
 	#calculate another list of candidate grasping poses with lower reachability
 	grasp_base_pose_list_2 = list()
-	grasp_base_pose_list_2 = getRobotBasePoseList(step_angle_2, dist_2, rb_pose, target_obj_x, target_obj_y)
+	grasp_base_pose_list_2 = getRobotBasePoseList(step_angle_2, dist_2, rb_pose, target_obj_x, target_obj_y, parent_obj_th)
 	#rospy.loginfo(grasp_base_pose_list) 
 
 	

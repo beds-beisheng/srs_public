@@ -227,6 +227,9 @@ class get_feasible_grasps():
 		self.finger_correction = (0, -0.0685)[nvg.category == "TOP"];
 		finger_pos = self.transform_finger_positions(fpositions, nvg.grasp.pose);
 
+		if nvg.grasp.pose.position.z < obj_pose.position.z + 0.05:
+			return True;
+
 		for fp in finger_pos:
 			if (obj_pose.position.z + 0.05)> (fp.pose.position.z + self.finger_correction):
 				return True;
