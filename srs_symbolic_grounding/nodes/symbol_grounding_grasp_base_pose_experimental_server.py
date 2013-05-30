@@ -130,7 +130,7 @@ def getRobotBasePoseList(angle, dist, rbp, obj_x, obj_y, p_obj_th):
 		if grasp_base_pose.theta > math.pi:
 			grasp_base_pose.theta -= 2.0 * math.pi
 		grasp_base_pose_list.append(grasp_base_pose)
-	#rospy.loginfo(grasp_base_pose_list)
+	rospy.loginfo(grasp_base_pose_list[0])
 	return grasp_base_pose_list
 
 
